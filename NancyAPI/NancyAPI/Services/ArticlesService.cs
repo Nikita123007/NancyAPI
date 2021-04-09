@@ -10,9 +10,9 @@ namespace NancyAPI.Services
         private const string DATE_FORMAT = "yyyy-MM-dd";
         private const string SHORT_URL_FORMAT = "XXXXXXX";
 
-        private readonly ArticlesSourceService m_ArticlesSourceService;
+        private readonly IArticlesSourceService m_ArticlesSourceService;
 
-        public ArticlesService(ArticlesSourceService articlesSourceService)
+        public ArticlesService(IArticlesSourceService articlesSourceService)
         {
             m_ArticlesSourceService = articlesSourceService;
         }
@@ -44,7 +44,7 @@ namespace NancyAPI.Services
 
         public ArticleView GetArticlesByShortUrl(string shortUrl)
         {
-            if (shortUrl.Length != 7)
+            if (shortUrl.Length != SHORT_URL_FORMAT.Length)
                 throw new NancyAPIExeption($"The date has an incorrect format. Expected format: {SHORT_URL_FORMAT}");
 
             var sourceArticles = m_ArticlesSourceService.GetData();

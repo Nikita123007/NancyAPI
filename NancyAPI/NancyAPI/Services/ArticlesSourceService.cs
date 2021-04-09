@@ -7,7 +7,7 @@ using System.Net;
 
 namespace NancyAPI.Services
 {
-    public class ArticlesSourceService
+    public class ArticlesSourceService : IArticlesSourceService
     {
         public List<ArticleSource> GetData(string section = null)
         {

@@ -3,9 +3,7 @@ using NancyAPI.Models;
 using NancyAPI.Services;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace NancyAPI.Modules
 {
@@ -14,7 +12,7 @@ namespace NancyAPI.Modules
         private const string DEFAULT_ERROR_MESSAGE = "Something went wrong";
         private const string WELCOME_MESSAGE = "Hello!";
         private const string DATE_FORMAT = "yyyy-MM-dd";
-        private Regex Regex = new Regex("(http[s]?:[/])[^/]", RegexOptions.IgnoreCase, new TimeSpan(0, 0, 0, 1));
+        private const string SHORT_URL_FORMAT = "XXXXXXX";
 
         private readonly ArticlesService m_ArticlesService;
 
@@ -26,7 +24,7 @@ namespace NancyAPI.Modules
             Get("/list/{section}/first", args => ExecuteAction(() => GetFirstArticle(args.section)));
             Get("/list/{section}/{updatedDate}", args => ExecuteAction(() => GetArticlesByDate(args.section, args.updatedDate)));
             Get("/list/{section}", args => ExecuteAction(() => GetArticles(args.section)));
-            Get("/article/{shortUrl*}", args => ExecuteAction(() => GetArticlesByShortUrl(args.shortUrl)));
+            Get("/article/{shortUrl}", args => ExecuteAction(() => GetArticlesByShortUrl(args.shortUrl)));
             Get("/group/{section}", args => ExecuteAction(() => GetArticlesGroupsByDate(args.section)));
         }
 
@@ -72,23 +70,15 @@ namespace NancyAPI.Modules
 
         private string GetArticlesByShortUrl(string shortUrl)
         {
-            shortUrl = GetCorrectedUrl(shortUrl);
+            if (shortUrl.Length != 7)
+                throw new NancyAPIExeption($"The date has an incorrect format. Expected format: {SHORT_URL_FORMAT}");
+
             var sourceArticles = m_ArticlesService.GetData();
-            var article = sourceArticles.FirstOrDefault(a => a.ShortUrl == shortUrl);
+            var article = sourceArticles.FirstOrDefault(a => a.ShortUrl.EndsWith(shortUrl));
             if (article == null)
                 throw new NancyAPIExeption($"The article with the url {shortUrl} was not found");
             
             return JsonConvert.SerializeObject(new ArticleView(article));
-        }
-
-        private string GetCorrectedUrl(string url)
-        {
-            if (Regex.IsMatch(url))
-            {
-                var invalidPart = Regex.Match(url).Groups[1].Value;
-                url = url.Replace(invalidPart, invalidPart + @"/");
-            }
-            return url;
         }
 
         private string GetArticlesGroupsByDate(string section)

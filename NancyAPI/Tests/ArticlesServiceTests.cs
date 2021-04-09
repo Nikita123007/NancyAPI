@@ -4,6 +4,7 @@ using NancyAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Tests
@@ -31,22 +32,23 @@ namespace Tests
         public ArticlesServiceTests()
         {
             var mockArticlesSourceService = new Mock<IArticlesSourceService>();
-            mockArticlesSourceService.Setup(service => service.GetData(SECTION)).Returns(ARTICLE_SOURCES.ToList());
-            mockArticlesSourceService.Setup(service => service.GetData(null)).Returns(ARTICLE_SOURCES.ToList());
+            mockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            mockArticlesSourceService.Setup(service => service.GetData(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
 
             m_ArticlesService = new ArticlesService(mockArticlesSourceService.Object);
         }
 
         [Fact]
-        public void IsConnected()
+        public async Task IsConnected()
         {
-            Assert.True(m_ArticlesService.IsConnected(out var message));
+            var isConnected = await m_ArticlesService.IsConnected();
+            Assert.True(isConnected.Item1, isConnected.Item2);
         }
 
         [Fact]
-        public void GetFirstArticle()
+        public async Task GetFirstArticle()
         {
-            var article = m_ArticlesService.GetFirstArticle(SECTION);
+            var article = await m_ArticlesService.GetFirstArticle(SECTION);
 
             var expectedArticle = new ArticleView(ARTICLE_SOURCES.First());
 
@@ -54,9 +56,9 @@ namespace Tests
         }
 
         [Fact]
-        public void GetArticles()
+        public async Task GetArticles()
         {
-            var articles = m_ArticlesService.GetArticles(SECTION);
+            var articles = await m_ArticlesService.GetArticles(SECTION);
 
             var expectedArticles = ARTICLE_SOURCES.Select(a => new ArticleView(a)).ToList();
 
@@ -64,12 +66,12 @@ namespace Tests
         }
 
         [Fact]
-        public void GetArticlesByDate()
+        public async Task GetArticlesByDate()
         {
             var expectedArticleSource = ARTICLE_SOURCES.First();
             var date = expectedArticleSource.UpdatedDate;
 
-            var articles = m_ArticlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT));
+            var articles = await m_ArticlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT));
 
             var expectedArticles = ARTICLE_SOURCES.Where(a => a.UpdatedDate == date)
                 .Select(a => new ArticleView(a)).ToList();
@@ -78,12 +80,12 @@ namespace Tests
         }
 
         [Fact]
-        public void GetArticlesByShortUrl()
+        public async Task GetArticlesByShortUrl()
         {
             var expectedArticleSource = ARTICLE_SOURCES.Last();
             var shortUrl = expectedArticleSource.ShortUrl;
 
-            var article = m_ArticlesService.GetArticlesByShortUrl(shortUrl);
+            var article = await m_ArticlesService.GetArticlesByShortUrl(shortUrl);
 
             var expectedArticle = new ArticleView(expectedArticleSource);
 
@@ -91,9 +93,9 @@ namespace Tests
         }
 
         [Fact]
-        public void GetArticlesGroupsByDate()
+        public async Task GetArticlesGroupsByDate()
         {
-            var articleGroups = m_ArticlesService.GetArticlesGroupsByDate(SECTION);
+            var articleGroups = await m_ArticlesService.GetArticlesGroupsByDate(SECTION);
 
             var expectedArticleGroups = ARTICLE_SOURCES.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
                 .Select(group => new ArticleGroupByDateView(group.Key.ToString(DATE_FORMAT), group.Count())).ToList();

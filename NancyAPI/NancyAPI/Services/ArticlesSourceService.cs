@@ -4,14 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace NancyAPI.Services
 {
     public class ArticlesSourceService : IArticlesSourceService
     {
-        public List<ArticleSource> GetData(string section = null)
+        public async Task<List<ArticleSource>> GetData(string section = null)
         {
-            var content = GetContent(section ?? Config.HomeSection);
+            var content = await GetContent(section ?? Config.HomeSection);
             if (TryParse<DataResponse>(content, out var dataResponse))
             {
                 if (dataResponse.Fault == null)
@@ -23,7 +24,7 @@ namespace NancyAPI.Services
             throw new NancyAPIExeption("Invalid data format");
         }
 
-        private string GetContent(string section)
+        private async Task<string> GetContent(string section)
         {
             try
             {
@@ -31,7 +32,7 @@ namespace NancyAPI.Services
                 using (var stream = request.GetResponse().GetResponseStream())
                 using (var streamReader = new StreamReader(stream))
                 {
-                    return streamReader.ReadToEnd();
+                    return await streamReader.ReadToEndAsync();
                 }
             }
             catch (WebException ex)

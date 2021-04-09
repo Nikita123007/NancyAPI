@@ -2,6 +2,7 @@
 using NancyAPI.Services;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 
 namespace NancyAPI.Modules
 {
@@ -16,31 +17,43 @@ namespace NancyAPI.Modules
         {
             m_ArticlesService = articlesService;
 
-            Get("/", _ => ExecuteAction(() => CheckConnect()));
-            Get("/list/{section}/first", args => ExecuteAction(() => articlesService.GetFirstArticle(args.section)));
-            Get("/list/{section}/{updatedDate}", args => ExecuteAction(() => articlesService.GetArticlesByDate(args.section, args.updatedDate)));
-            Get("/list/{section}", args => ExecuteAction(() => articlesService.GetArticles(args.section)));
-            Get("/article/{shortUrl}", args => ExecuteAction(() => articlesService.GetArticlesByShortUrl(args.shortUrl)));
-            Get("/group/{section}", args => ExecuteAction(() => articlesService.GetArticlesGroupsByDate(args.section)));
+            Get("/", async _ => 
+                await ExecuteAction(async () => await CheckConnect()));
+
+            Get("/list/{section}/first", async args => 
+                await ExecuteAction(async () => await articlesService.GetFirstArticle(args.section)));
+
+            Get("/list/{section}/{updatedDate}", async args => 
+                await ExecuteAction(async () => await articlesService.GetArticlesByDate(args.section, args.updatedDate)));
+
+            Get("/list/{section}", async args => 
+                await ExecuteAction(async () => await articlesService.GetArticles(args.section)));
+
+            Get("/article/{shortUrl}", async args => 
+                await ExecuteAction(async () => await articlesService.GetArticlesByShortUrl(args.shortUrl)));
+
+            Get("/group/{section}", async args => 
+                await ExecuteAction(async () => await articlesService.GetArticlesGroupsByDate(args.section)));
         }
 
-        private string CheckConnect()
+        private async Task<string> CheckConnect()
         {
-            if (m_ArticlesService.IsConnected(out var errorMessage))
+            var isConnected = await m_ArticlesService.IsConnected();
+            if (isConnected.Item1)
             {
                 return WELCOME_MESSAGE;
             }
             else
             {
-                return errorMessage;
+                return isConnected.Item2;
             }
         }
 
-        private string ExecuteAction(Func<object> func)
+        private async Task<string> ExecuteAction(Func<Task<object>> func)
         {
             try
             {
-                return JsonConvert.SerializeObject(func());
+                return JsonConvert.SerializeObject(await func());
             }
             catch (NancyAPIExeption ex)
             {

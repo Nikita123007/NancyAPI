@@ -1,34 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Nancy.Owin;
+using NancyAPI.Services;
 
 namespace NancyAPI
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public IConfiguration AppConfiguration { get; set; }
+
+        public Startup(IConfiguration config)
+        {
+            AppConfiguration = config;
+        }
+        
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ArticlesService>();
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            Config.Key = AppConfiguration["key"];
+            Config.HomeSection = AppConfiguration["home_section"];
+            Config.UrlTemplate = AppConfiguration["url_template"];
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            var loggerFactory = new LoggerFactory();
+            loggerFactory.AddDebug();
+            ILogger logger = loggerFactory.CreateLogger<Startup>();
+            Logger.Configure(logger);
+
+            app.UseOwin(b => b.UseNancy());
         }
     }
 }

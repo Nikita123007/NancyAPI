@@ -1,80 +1,78 @@
 ﻿using NancyAPI.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
+using System.Linq;
 
 namespace NancyAPI.Services
 {
     public class ArticlesService
     {
-        public List<ArticleSource> GetData(string section = null)
+        private const string DATE_FORMAT = "yyyy-MM-dd";
+        private const string SHORT_URL_FORMAT = "XXXXXXX";
+
+        private readonly ArticlesSourceService m_ArticlesSourceService;
+
+        public ArticlesService(ArticlesSourceService articlesSourceService)
         {
-            var content = GetContent(section ?? Config.HomeSection);
-            if (TryParse<DataResponse>(content, out var dataResponse))
-            {
-                if (dataResponse.Fault == null)
-                {
-                    return dataResponse.Results;
-                }
-                throw new NancyAPIExeption(dataResponse.Fault.FaultString);
-            }
-            throw new NancyAPIExeption("Invalid data format");
+            m_ArticlesSourceService = articlesSourceService;
+        }
+        
+        public ArticleView GetFirstArticle(string section)
+        {
+            var sourceArticles = m_ArticlesSourceService.GetData(section);
+            if (!sourceArticles.Any())
+                throw new NancyAPIExeption("There are no articles for this section");
+
+            return new ArticleView(sourceArticles.First());
+        }
+
+        public List<ArticleView> GetArticles(string section)
+        {
+            var sourceArticles = m_ArticlesSourceService.GetData(section);
+            return sourceArticles.Select(sourceArticle => new ArticleView(sourceArticle)).ToList();
+        }
+
+        public List<ArticleView> GetArticlesByDate(string section, string updatedDateStr)
+        {
+            if (!DateTime.TryParse(updatedDateStr, out var updatedDate))
+                throw new NancyAPIExeption($"The date has an incorrect format. Expected format: {DATE_FORMAT}");
+
+            var sourceArticles = m_ArticlesSourceService.GetData(section);
+            return sourceArticles.Where(sourceArticle => sourceArticle.UpdatedDate.Date == updatedDate.Date)
+                .Select(sourceArticle => new ArticleView(sourceArticle)).ToList();
+        }
+
+        public ArticleView GetArticlesByShortUrl(string shortUrl)
+        {
+            if (shortUrl.Length != 7)
+                throw new NancyAPIExeption($"The date has an incorrect format. Expected format: {SHORT_URL_FORMAT}");
+
+            var sourceArticles = m_ArticlesSourceService.GetData();
+            var article = sourceArticles.FirstOrDefault(a => a.ShortUrl.EndsWith(shortUrl));
+            if (article == null)
+                throw new NancyAPIExeption($"The article with the url {shortUrl} was not found");
+
+            return new ArticleView(article);
+        }
+
+        public List<ArticleGroupByDateView> GetArticlesGroupsByDate(string section)
+        {
+            var sourceArticles = m_ArticlesSourceService.GetData(section);
+            return sourceArticles.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
+                .Select(group => new ArticleGroupByDateView(group.Key.ToString(DATE_FORMAT), group.Count())).ToList();
         }
 
         public bool IsConnected(out string errorMessage)
         {
             try
             {
-                GetData();
+                m_ArticlesSourceService.GetData();
                 errorMessage = null;
                 return true;
             }
             catch (NancyAPIExeption ex)
             {
                 errorMessage = ex.Message;
-                return false;
-            }
-        }
-
-        private string GetContent(string section)
-        {
-            try
-            {
-                var request = WebRequest.Create(GetUrl(section));
-                using (var stream = request.GetResponse().GetResponseStream())
-                using (var streamReader = new StreamReader(stream))
-                {
-                    return streamReader.ReadToEnd();
-                }
-            }
-            catch (WebException ex)
-            {
-                string errorContent;
-                using (var streamReader = new StreamReader(ex.Response.GetResponseStream()))
-                {
-                    errorContent = streamReader.ReadToEnd();
-                }
-                if (TryParse<ErrorResponse>(errorContent, out var errorResponse))
-                    throw new NancyAPIExeption(errorResponse.Fault.FaultString);
-                else
-                    throw new NancyAPIExeption(errorContent);
-            }
-        }
-
-        private string GetUrl(string section) => string.Format(Config.UrlTemplate, section, Config.Key);
-
-        private bool TryParse<T>(string content, out T data)
-        {
-            try
-            {
-                data = JsonConvert.DeserializeObject<T>(content);
-                return true;
-            }
-            catch (Exception)
-            {
-                data = default(T);
                 return false;
             }
         }

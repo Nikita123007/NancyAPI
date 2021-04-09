@@ -20,6 +20,7 @@ namespace NancyAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ArticlesService>();
+            services.AddSingleton<ArticlesSourceService>();
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

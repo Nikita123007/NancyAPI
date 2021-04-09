@@ -2,7 +2,7 @@
 
 namespace NancyAPI.Models
 {
-    public class ArticleView
+    public class ArticleView : IComparable<ArticleView>
     {
         public string Heading { get; set; }
 
@@ -15,6 +15,16 @@ namespace NancyAPI.Models
             Heading = articleSource.Title;
             Updated = articleSource.UpdatedDate;
             Link = articleSource.ShortUrl;
+        }
+
+        public int CompareTo(ArticleView other)
+        {
+            if (other == null ||
+                Heading != other.Heading ||
+                Updated != other.Updated ||
+                Link != other.Link) return -1;
+            else
+                return 0;
         }
     }
 }

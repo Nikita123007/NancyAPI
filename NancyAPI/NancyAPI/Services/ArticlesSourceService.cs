@@ -1,4 +1,5 @@
 ﻿using NancyAPI.Models;
+using NancyAPI.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace NancyAPI.Services
         {
             try
             {
-                data = JsonConvert.DeserializeObject<T>(content);
+                data = Converter.FromJson<T>(content);
                 return true;
             }
             catch (Exception)

@@ -1,5 +1,6 @@
 ﻿using Nancy;
 using NancyAPI.Services;
+using NancyAPI.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace NancyAPI.Modules
         {
             try
             {
-                return JsonConvert.SerializeObject(await func());
+                return Converter.ToJson(await func());
             }
             catch (NancyAPIExeption ex)
             {

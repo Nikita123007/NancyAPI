@@ -43,7 +43,10 @@ namespace Tests
             m_MockArticlesSourceService.Setup(service => service.GetData(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
 
+            // Act
             var isConnected = await articlesService.IsConnected();
+
+            // Assert
             Assert.True(isConnected.Item1, isConnected.Item2);
         }
 
@@ -53,11 +56,12 @@ namespace Tests
             // Arrange
             m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
-
-            var article = await articlesService.GetFirstArticle(SECTION);
-
             var expectedArticle = ARTICLE_SOURCES.First();
 
+            // Act
+            var article = await articlesService.GetFirstArticle(SECTION);
+
+            // Assert
             Assert.Equal(expectedArticle, article);
         }
 
@@ -67,11 +71,12 @@ namespace Tests
             // Arrange
             m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
-
-            var articles = await articlesService.GetArticles(SECTION);
-
             var expectedArticles = ARTICLE_SOURCES;
 
+            // Act
+            var articles = await articlesService.GetArticles(SECTION);
+
+            // Assert
             Assert.Equal(expectedArticles, articles);
         }
 
@@ -81,14 +86,14 @@ namespace Tests
             // Arrange
             m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
-
             var expectedArticleSource = ARTICLE_SOURCES.First();
             var date = expectedArticleSource.UpdatedDate;
-
-            var articles = await articlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT), DATE_FORMAT);
-
             var expectedArticles = ARTICLE_SOURCES.Where(a => a.UpdatedDate == date).ToList();
 
+            // Act
+            var articles = await articlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT), DATE_FORMAT);
+
+            // Assert
             Assert.Equal(expectedArticles, articles);
         }
 
@@ -98,12 +103,13 @@ namespace Tests
             // Arrange
             m_MockArticlesSourceService.Setup(service => service.GetData(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
-
             var expectedArticle = ARTICLE_SOURCES.Last();
             var shortUrl = expectedArticle.ShortUrl;
 
+            // Act
             var article = await articlesService.GetArticlesByShortUrl(shortUrl, SHORT_URL_FORMAT);
 
+            // Assert
             Assert.Equal(expectedArticle, article);
         }
 
@@ -113,12 +119,13 @@ namespace Tests
             // Arrange
             m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
-
-            var articleGroups = await articlesService.GetArticlesGroupsByDate(SECTION, DATE_FORMAT);
-
             var expectedArticleGroups = ARTICLE_SOURCES.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
                 .Select(group => (group.Key.ToString(DATE_FORMAT), group.Count())).ToList();
 
+            // Act
+            var articleGroups = await articlesService.GetArticlesGroupsByDate(SECTION, DATE_FORMAT);
+
+            // Assert
             Assert.Equal(expectedArticleGroups, articleGroups);
         }
     }

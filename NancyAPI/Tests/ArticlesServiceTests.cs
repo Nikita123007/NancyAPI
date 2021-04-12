@@ -52,7 +52,7 @@ namespace Tests
 
             var expectedArticle = new ArticleView(ARTICLE_SOURCES.First());
 
-            Assert.Equal(article, expectedArticle);
+            Assert.Equal(expectedArticle, article);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace Tests
 
             var expectedArticles = ARTICLE_SOURCES.Select(a => new ArticleView(a)).ToList();
 
-            Assert.Equal(articles, expectedArticles);
+            Assert.Equal(expectedArticles, articles);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace Tests
             var expectedArticles = ARTICLE_SOURCES.Where(a => a.UpdatedDate == date)
                 .Select(a => new ArticleView(a)).ToList();
 
-            Assert.Equal(articles, expectedArticles);
+            Assert.Equal(expectedArticles, articles);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Tests
 
             var expectedArticle = new ArticleView(expectedArticleSource);
 
-            Assert.Equal(article, expectedArticle);
+            Assert.Equal(expectedArticle, article);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace Tests
             var expectedArticleGroups = ARTICLE_SOURCES.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
                 .Select(group => new ArticleGroupByDateView(group.Key.ToString(DATE_FORMAT), group.Count())).ToList();
 
-            Assert.Equal(articleGroups, expectedArticleGroups);
+            Assert.Equal(expectedArticleGroups, articleGroups);
         }
     }
 }

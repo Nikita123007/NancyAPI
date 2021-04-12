@@ -7,6 +7,5 @@ namespace NancyAPI.Core.Models
     {
         [JsonProperty("results")]
         public List<ArticleSource> Results { get; set; }
-        public Fault Fault { get; set; }
     }
 }

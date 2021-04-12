@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace NancyAPI
+namespace NancyAPI.Utils
 {
     public static class Logger
     {

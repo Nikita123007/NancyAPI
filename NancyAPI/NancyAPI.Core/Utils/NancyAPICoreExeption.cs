@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NancyAPI.Core
+namespace NancyAPI.Core.Utils
 {
     public class NancyAPICoreExeption : Exception
     {

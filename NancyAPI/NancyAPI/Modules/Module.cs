@@ -1,8 +1,8 @@
 ﻿using Nancy;
-using NancyAPI.Core;
 using NancyAPI.Core.Services;
 using NancyAPI.Core.Utils;
 using NancyAPI.Models;
+using NancyAPI.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

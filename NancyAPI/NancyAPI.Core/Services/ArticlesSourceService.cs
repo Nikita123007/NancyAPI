@@ -15,11 +15,7 @@ namespace NancyAPI.Core.Services
             var content = await GetContent(section ?? Config.HomeSection);
             if (TryParse<DataResponse>(content, out var dataResponse))
             {
-                if (dataResponse.Fault == null)
-                {
-                    return dataResponse.Results;
-                }
-                throw new NancyAPICoreExeption(dataResponse.Fault.FaultString);
+                return dataResponse.Results;
             }
             throw new NancyAPICoreExeption("Invalid data format");
         }

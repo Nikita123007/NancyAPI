@@ -22,7 +22,9 @@ namespace NancyAPI.Services
         {
             var sourceArticles = await m_ArticlesSourceService.GetData(section);
             if (!sourceArticles.Any())
+            {
                 throw new NancyAPIExeption("There are no articles for this section");
+            }
 
             return new ArticleView(sourceArticles.First());
         }
@@ -36,7 +38,9 @@ namespace NancyAPI.Services
         public async Task<List<ArticleView>> GetArticlesByDate(string section, string updatedDateStr)
         {
             if (!DateTime.TryParse(updatedDateStr, out var updatedDate))
+            {
                 throw new NancyAPIExeption($"The date has an incorrect format. Expected format: {DATE_FORMAT}");
+            }
 
             var sourceArticles = await m_ArticlesSourceService.GetData(section);
             return sourceArticles.Where(sourceArticle => sourceArticle.UpdatedDate.Date == updatedDate.Date)
@@ -46,12 +50,16 @@ namespace NancyAPI.Services
         public async Task<ArticleView> GetArticlesByShortUrl(string shortUrl)
         {
             if (shortUrl.Length != SHORT_URL_FORMAT.Length)
+            {
                 throw new NancyAPIExeption($"The date has an incorrect format. Expected format: {SHORT_URL_FORMAT}");
+            }
 
             var sourceArticles = await m_ArticlesSourceService.GetData();
             var article = sourceArticles.FirstOrDefault(a => a.ShortUrl.EndsWith(shortUrl));
             if (article == null)
+            {
                 throw new NancyAPIExeption($"The article with the url {shortUrl} was not found");
+            }
 
             return new ArticleView(article);
         }

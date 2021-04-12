@@ -22,9 +22,14 @@ namespace NancyAPI.Models
             if (other == null ||
                 Heading != other.Heading ||
                 Updated != other.Updated ||
-                Link != other.Link) return -1;
+                Link != other.Link)
+            {
+                return -1;
+            }
             else
+            {
                 return 0;
+            }
         }
     }
 }

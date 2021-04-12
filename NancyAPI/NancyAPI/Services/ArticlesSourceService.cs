@@ -44,9 +44,13 @@ namespace NancyAPI.Services
                     errorContent = streamReader.ReadToEnd();
                 }
                 if (TryParse<ErrorResponse>(errorContent, out var errorResponse))
+                {
                     throw new NancyAPIExeption(errorResponse.Fault.FaultString);
+                }
                 else
+                {
                     throw new NancyAPIExeption(errorContent);
+                }
             }
         }
 

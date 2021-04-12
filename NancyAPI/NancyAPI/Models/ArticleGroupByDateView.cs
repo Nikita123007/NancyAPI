@@ -14,9 +14,14 @@ namespace NancyAPI.Models
         {
             if (other == null ||
                 Date != other.Date ||
-                Total != other.Total) return -1;
+                Total != other.Total)
+            {
+                return -1;
+            }
             else
+            {
                 return 0;
+            }
         }
     }
 }

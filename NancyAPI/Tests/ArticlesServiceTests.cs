@@ -1,7 +1,7 @@
 ﻿using Moq;
 using NancyAPI.Core.Models;
 using NancyAPI.Core.Services;
-using NancyAPI.Models;
+using NancyAPI.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,25 @@ namespace Tests
             var isConnected = await articlesService.IsConnected();
 
             // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(null), Times.Once);
             Assert.True(isConnected.Item1, isConnected.Item2);
+        }
+
+        [Fact]
+        public async Task IsNotConnected()
+        {
+            // Arrange
+            var errorMessage = "Server error";
+            m_MockArticlesSourceService.Setup(service => service.GetData(null)).ThrowsAsync(new NancyAPICoreExeption(errorMessage));
+            var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
+
+            // Act
+            var isConnected = await articlesService.IsConnected();
+
+            // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(null), Times.Once);
+            Assert.False(isConnected.Item1);
+            Assert.Equal(isConnected.Item2, errorMessage);
         }
 
         [Fact]
@@ -62,6 +80,7 @@ namespace Tests
             var article = await articlesService.GetFirstArticle(SECTION);
 
             // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
             Assert.Equal(expectedArticle, article);
         }
 
@@ -77,6 +96,7 @@ namespace Tests
             var articles = await articlesService.GetArticles(SECTION);
 
             // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
             Assert.Equal(expectedArticles, articles);
         }
 
@@ -94,6 +114,7 @@ namespace Tests
             var articles = await articlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT), DATE_FORMAT);
 
             // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
             Assert.Equal(expectedArticles, articles);
         }
 
@@ -110,6 +131,7 @@ namespace Tests
             var article = await articlesService.GetArticlesByShortUrl(shortUrl, SHORT_URL_FORMAT);
 
             // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(null), Times.Once);
             Assert.Equal(expectedArticle, article);
         }
 
@@ -126,7 +148,25 @@ namespace Tests
             var articleGroups = await articlesService.GetArticlesGroupsByDate(SECTION, DATE_FORMAT);
 
             // Assert
+            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
             Assert.Equal(expectedArticleGroups, articleGroups);
+        }
+
+        [Fact]
+        public void GetArticlesByInvalidSection()
+        {
+            // Arrange
+            var errorMessage = "Invalid section";
+            m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ThrowsAsync(new NancyAPICoreExeption(errorMessage));
+            var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
+
+            // Act
+            Action act = () => articlesService.GetArticles(SECTION).GetAwaiter().GetResult();
+
+            // Assert
+            var exception = Assert.Throws<NancyAPICoreExeption>(act);
+            Assert.Equal(errorMessage, exception.Message);
+            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
         }
     }
 }

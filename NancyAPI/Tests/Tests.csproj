@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NancyAPI.Core\NancyAPI.Core.csproj" />
     <ProjectReference Include="..\NancyAPI\NancyAPI.csproj" />
   </ItemGroup>
 

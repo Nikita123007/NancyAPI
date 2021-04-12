@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nancy.Owin;
-using NancyAPI.Services;
+using NancyAPI.Core;
+using NancyAPI.Utils;
 
 namespace NancyAPI
 {
@@ -19,8 +20,6 @@ namespace NancyAPI
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ArticlesService>();
-            services.AddSingleton<IArticlesSourceService, ArticlesSourceService>();
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -34,7 +33,7 @@ namespace NancyAPI
             ILogger logger = loggerFactory.CreateLogger<Startup>();
             Logger.Configure(logger);
 
-            app.UseOwin(b => b.UseNancy());
+            app.UseOwin(x => x.UseNancy(opt => opt.Bootstrapper = new Bootstrapper()));
         }
     }
 }

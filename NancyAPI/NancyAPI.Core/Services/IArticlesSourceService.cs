@@ -1,8 +1,8 @@
-﻿using NancyAPI.Models;
+﻿using NancyAPI.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NancyAPI.Services
+namespace NancyAPI.Core.Services
 {
     public interface IArticlesSourceService
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NancyAPI.Core.Models;
+using System;
 
 namespace NancyAPI.Models
 {

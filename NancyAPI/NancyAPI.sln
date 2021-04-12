@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28307.1433
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NancyAPI", "NancyAPI\NancyAPI.csproj", "{1295B4D1-D9CA-4C75-B5F2-6BA1B8B1636D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{12ADE581-1A18-4A8F-932A-EC741878A69B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{12ADE581-1A18-4A8F-932A-EC741878A69B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NancyAPI.Core", "NancyAPI.Core\NancyAPI.Core.csproj", "{24AB9E0F-AAC7-4B8A-80BA-09E1E7180049}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{12ADE581-1A18-4A8F-932A-EC741878A69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12ADE581-1A18-4A8F-932A-EC741878A69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12ADE581-1A18-4A8F-932A-EC741878A69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24AB9E0F-AAC7-4B8A-80BA-09E1E7180049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24AB9E0F-AAC7-4B8A-80BA-09E1E7180049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24AB9E0F-AAC7-4B8A-80BA-09E1E7180049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24AB9E0F-AAC7-4B8A-80BA-09E1E7180049}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

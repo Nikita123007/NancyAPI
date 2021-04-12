@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace NancyAPI.Models
+namespace NancyAPI.Core.Models
 {
     public class ErrorResponse
     {

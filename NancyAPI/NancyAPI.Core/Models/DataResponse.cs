@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace NancyAPI.Models
+namespace NancyAPI.Core.Models
 {
     public class DataResponse
     {

@@ -1,6 +1,7 @@
 ﻿using Moq;
+using NancyAPI.Core.Models;
+using NancyAPI.Core.Services;
 using NancyAPI.Models;
-using NancyAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Tests
     public class ArticlesServiceTests
     {
         private const string DATE_FORMAT = "yyyy-MM-dd";
+        private const string SHORT_URL_FORMAT = "XXXXXXX";
         private const string SECTION = "home";
 
         private IReadOnlyList<ArticleSource> ARTICLE_SOURCES = new List<ArticleSource>()
@@ -54,7 +56,7 @@ namespace Tests
 
             var article = await articlesService.GetFirstArticle(SECTION);
 
-            var expectedArticle = new ArticleView(ARTICLE_SOURCES.First());
+            var expectedArticle = ARTICLE_SOURCES.First();
 
             Assert.Equal(expectedArticle, article);
         }
@@ -68,7 +70,7 @@ namespace Tests
 
             var articles = await articlesService.GetArticles(SECTION);
 
-            var expectedArticles = ARTICLE_SOURCES.Select(a => new ArticleView(a)).ToList();
+            var expectedArticles = ARTICLE_SOURCES;
 
             Assert.Equal(expectedArticles, articles);
         }
@@ -83,10 +85,9 @@ namespace Tests
             var expectedArticleSource = ARTICLE_SOURCES.First();
             var date = expectedArticleSource.UpdatedDate;
 
-            var articles = await articlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT));
+            var articles = await articlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT), DATE_FORMAT);
 
-            var expectedArticles = ARTICLE_SOURCES.Where(a => a.UpdatedDate == date)
-                .Select(a => new ArticleView(a)).ToList();
+            var expectedArticles = ARTICLE_SOURCES.Where(a => a.UpdatedDate == date).ToList();
 
             Assert.Equal(expectedArticles, articles);
         }
@@ -98,12 +99,10 @@ namespace Tests
             m_MockArticlesSourceService.Setup(service => service.GetData(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
 
-            var expectedArticleSource = ARTICLE_SOURCES.Last();
-            var shortUrl = expectedArticleSource.ShortUrl;
+            var expectedArticle = ARTICLE_SOURCES.Last();
+            var shortUrl = expectedArticle.ShortUrl;
 
-            var article = await articlesService.GetArticlesByShortUrl(shortUrl);
-
-            var expectedArticle = new ArticleView(expectedArticleSource);
+            var article = await articlesService.GetArticlesByShortUrl(shortUrl, SHORT_URL_FORMAT);
 
             Assert.Equal(expectedArticle, article);
         }
@@ -115,10 +114,10 @@ namespace Tests
             m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
 
-            var articleGroups = await articlesService.GetArticlesGroupsByDate(SECTION);
+            var articleGroups = await articlesService.GetArticlesGroupsByDate(SECTION, DATE_FORMAT);
 
             var expectedArticleGroups = ARTICLE_SOURCES.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
-                .Select(group => new ArticleGroupByDateView(group.Key.ToString(DATE_FORMAT), group.Count())).ToList();
+                .Select(group => (group.Key.ToString(DATE_FORMAT), group.Count())).ToList();
 
             Assert.Equal(expectedArticleGroups, articleGroups);
         }

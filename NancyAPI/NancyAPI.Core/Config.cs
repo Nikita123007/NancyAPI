@@ -1,4 +1,4 @@
-﻿namespace NancyAPI
+﻿namespace NancyAPI.Core
 {
     public static class Config
     {

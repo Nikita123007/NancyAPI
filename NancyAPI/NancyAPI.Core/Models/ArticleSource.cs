@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace NancyAPI.Models
+namespace NancyAPI.Core.Models
 {
     public class ArticleSource
     {

@@ -1,13 +1,12 @@
-﻿using NancyAPI.Models;
-using NancyAPI.Utils;
-using Newtonsoft.Json;
+﻿using NancyAPI.Core.Models;
+using NancyAPI.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace NancyAPI.Services
+namespace NancyAPI.Core.Services
 {
     public class ArticlesSourceService : IArticlesSourceService
     {
@@ -20,9 +19,9 @@ namespace NancyAPI.Services
                 {
                     return dataResponse.Results;
                 }
-                throw new NancyAPIExeption(dataResponse.Fault.FaultString);
+                throw new NancyAPICoreExeption(dataResponse.Fault.FaultString);
             }
-            throw new NancyAPIExeption("Invalid data format");
+            throw new NancyAPICoreExeption("Invalid data format");
         }
 
         private async Task<string> GetContent(string section)
@@ -45,11 +44,11 @@ namespace NancyAPI.Services
                 }
                 if (TryParse<ErrorResponse>(errorContent, out var errorResponse))
                 {
-                    throw new NancyAPIExeption(errorResponse.Fault.FaultString);
+                    throw new NancyAPICoreExeption(errorResponse.Fault.FaultString);
                 }
                 else
                 {
-                    throw new NancyAPIExeption(errorContent);
+                    throw new NancyAPICoreExeption(errorContent);
                 }
             }
         }

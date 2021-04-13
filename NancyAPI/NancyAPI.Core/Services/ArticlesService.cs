@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NancyAPI.Core.Services
 {
-    public class ArticlesService
+    public class ArticlesService : IArticlesService
     {
         private readonly IArticlesSourceService m_ArticlesSourceService;
 

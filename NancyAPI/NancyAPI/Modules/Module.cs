@@ -17,9 +17,9 @@ namespace NancyAPI.Modules
         private const string DEFAULT_ERROR_MESSAGE = "Something went wrong";
         private const string WELCOME_MESSAGE = "Hello!";
 
-        private readonly ArticlesService m_ArticlesService;
+        private readonly IArticlesService m_ArticlesService;
 
-        public Module(ArticlesService articlesService)
+        public Module(IArticlesService articlesService)
         {
             m_ArticlesService = articlesService;
 
@@ -40,6 +40,19 @@ namespace NancyAPI.Modules
 
             Get("/group/{section}", async args => 
                 await ExecuteActionAsync(async () => await GetArticlesGroupsByDateAsync(args.section)));
+        }
+
+        private async Task<string> CheckConnectAsync()
+        {
+            var isConnected = await m_ArticlesService.IsConnectedAsync();
+            if (isConnected.Item1)
+            {
+                return WELCOME_MESSAGE;
+            }
+            else
+            {
+                return isConnected.Item2;
+            }
         }
 
         private async Task<ArticleView> GetFirstArticleAsync(string section)
@@ -68,19 +81,6 @@ namespace NancyAPI.Modules
         {
             return (await m_ArticlesService.GetArticlesGroupsByDateAsync(section, DATE_FORMAT))
                 .Select(group => new ArticleGroupByDateView(group.Item1, group.Item2)).ToList();
-        }
-
-        private async Task<string> CheckConnectAsync()
-        {
-            var isConnected = await m_ArticlesService.IsConnectedAsync();
-            if (isConnected.Item1)
-            {
-                return WELCOME_MESSAGE;
-            }
-            else
-            {
-                return isConnected.Item2;
-            }
         }
 
         private async Task<string> ExecuteActionAsync(Func<Task<object>> func)

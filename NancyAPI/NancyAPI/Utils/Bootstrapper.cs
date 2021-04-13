@@ -15,7 +15,7 @@ namespace NancyAPI.Utils
             base.ConfigureApplicationContainer(container);
             
             container.Register<IArticlesSourceService, ArticlesSourceService>();
-            container.Register<ArticlesService>();
+            container.Register<IArticlesService, ArticlesService>();
         }
     }
 }

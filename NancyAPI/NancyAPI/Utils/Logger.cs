@@ -14,12 +14,14 @@ namespace NancyAPI.Utils
 
         public static void Log(string message)
         {
-            m_Logger.LogError(message);
+            if (m_Logger != null)
+                m_Logger.LogError(message);
         }
 
         public static void Log(Exception ex)
         {
-            m_Logger.LogError(ex, ex.Message);
+            if (m_Logger != null)
+                m_Logger.LogError(ex, ex.Message);
         }
     }
 }

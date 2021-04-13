@@ -11,6 +11,9 @@ namespace NancyAPI.Models
 
         public string Link { get; set; }
 
+
+        public ArticleView() { }
+
         public ArticleView(ArticleSource articleSource)
         {
             Heading = articleSource.Title;

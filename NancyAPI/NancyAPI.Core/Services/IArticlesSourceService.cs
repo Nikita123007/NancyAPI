@@ -6,6 +6,6 @@ namespace NancyAPI.Core.Services
 {
     public interface IArticlesSourceService
     {
-        Task<List<ArticleSource>> GetData(string section = null);
+        Task<List<ArticleSource>> GetDataAsync(string section = null);
     }
 }

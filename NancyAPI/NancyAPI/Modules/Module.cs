@@ -24,55 +24,55 @@ namespace NancyAPI.Modules
             m_ArticlesService = articlesService;
 
             Get("/", async _ => 
-                await ExecuteAction(async () => await CheckConnect()));
+                await ExecuteActionAsync(async () => await CheckConnectAsync()));
 
             Get("/list/{section}/first", async args => 
-                await ExecuteAction(async () => await GetFirstArticle(args.section)));
+                await ExecuteActionAsync(async () => await GetFirstArticleAsync(args.section)));
 
             Get("/list/{section}/{updatedDate}", async args => 
-                await ExecuteAction(async () => await GetArticlesByDate(args.section, args.updatedDate)));
+                await ExecuteActionAsync(async () => await GetArticlesByDateAsync(args.section, args.updatedDate)));
 
             Get("/list/{section}", async args => 
-                await ExecuteAction(async () => await GetArticles(args.section)));
+                await ExecuteActionAsync(async () => await GetArticlesAsync(args.section)));
 
             Get("/article/{shortUrl}", async args => 
-                await ExecuteAction(async () => await GetArticlesByShortUrl(args.shortUrl)));
+                await ExecuteActionAsync(async () => await GetArticlesByShortUrlAsync(args.shortUrl)));
 
             Get("/group/{section}", async args => 
-                await ExecuteAction(async () => await GetArticlesGroupsByDate(args.section)));
+                await ExecuteActionAsync(async () => await GetArticlesGroupsByDateAsync(args.section)));
         }
 
-        private async Task<ArticleView> GetFirstArticle(string section)
+        private async Task<ArticleView> GetFirstArticleAsync(string section)
         {
-            return new ArticleView(await m_ArticlesService.GetFirstArticle(section));
+            return new ArticleView(await m_ArticlesService.GetFirstArticleAsync(section));
         }
 
-        private async Task<List<ArticleView>> GetArticlesByDate(string section, string updatedDateStr)
+        private async Task<List<ArticleView>> GetArticlesByDateAsync(string section, string updatedDateStr)
         {
-            return (await m_ArticlesService.GetArticlesByDate(section, updatedDateStr, DATE_FORMAT))
+            return (await m_ArticlesService.GetArticlesByDateAsync(section, updatedDateStr, DATE_FORMAT))
                 .Select(articleSource => new ArticleView(articleSource)).ToList();
         }
 
-        private async Task<List<ArticleView>> GetArticles(string section)
+        private async Task<List<ArticleView>> GetArticlesAsync(string section)
         {
-            return (await m_ArticlesService.GetArticles(section))
+            return (await m_ArticlesService.GetArticlesAsync(section))
                 .Select(articleSource => new ArticleView(articleSource)).ToList();
         }
 
-        private async Task<ArticleView> GetArticlesByShortUrl(string shortUrl)
+        private async Task<ArticleView> GetArticlesByShortUrlAsync(string shortUrl)
         {
-            return new ArticleView(await m_ArticlesService.GetArticlesByShortUrl(shortUrl, SHORT_URL_FORMAT));
+            return new ArticleView(await m_ArticlesService.GetArticlesByShortUrlAsync(shortUrl, SHORT_URL_FORMAT));
         }
 
-        private async Task<List<ArticleGroupByDateView>> GetArticlesGroupsByDate(string section)
+        private async Task<List<ArticleGroupByDateView>> GetArticlesGroupsByDateAsync(string section)
         {
-            return (await m_ArticlesService.GetArticlesGroupsByDate(section, DATE_FORMAT))
+            return (await m_ArticlesService.GetArticlesGroupsByDateAsync(section, DATE_FORMAT))
                 .Select(group => new ArticleGroupByDateView(group.Item1, group.Item2)).ToList();
         }
 
-        private async Task<string> CheckConnect()
+        private async Task<string> CheckConnectAsync()
         {
-            var isConnected = await m_ArticlesService.IsConnected();
+            var isConnected = await m_ArticlesService.IsConnectedAsync();
             if (isConnected.Item1)
             {
                 return WELCOME_MESSAGE;
@@ -83,7 +83,7 @@ namespace NancyAPI.Modules
             }
         }
 
-        private async Task<string> ExecuteAction(Func<Task<object>> func)
+        private async Task<string> ExecuteActionAsync(Func<Task<object>> func)
         {
             try
             {

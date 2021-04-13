@@ -16,9 +16,9 @@ namespace NancyAPI.Core.Services
             m_ArticlesSourceService = articlesSourceService;
         }
         
-        public async Task<ArticleSource> GetFirstArticle(string section)
+        public async Task<ArticleSource> GetFirstArticleAsync(string section)
         {
-            var sourceArticles = await m_ArticlesSourceService.GetData(section);
+            var sourceArticles = await m_ArticlesSourceService.GetDataAsync(section);
             if (!sourceArticles.Any())
             {
                 throw new NancyAPICoreExeption("There are no articles for this section");
@@ -27,30 +27,30 @@ namespace NancyAPI.Core.Services
             return sourceArticles.First();
         }
 
-        public async Task<List<ArticleSource>> GetArticles(string section)
+        public async Task<List<ArticleSource>> GetArticlesAsync(string section)
         {
-            return await m_ArticlesSourceService.GetData(section);
+            return await m_ArticlesSourceService.GetDataAsync(section);
         }
 
-        public async Task<IEnumerable<ArticleSource>> GetArticlesByDate(string section, string updatedDateStr, string dateFormat)
+        public async Task<IEnumerable<ArticleSource>> GetArticlesByDateAsync(string section, string updatedDateStr, string dateFormat)
         {
             if (!DateTime.TryParse(updatedDateStr, out var updatedDate))
             {
                 throw new NancyAPICoreExeption($"The date has an incorrect format. Expected format: {dateFormat}");
             }
 
-            var sourceArticles = await m_ArticlesSourceService.GetData(section);
+            var sourceArticles = await m_ArticlesSourceService.GetDataAsync(section);
             return sourceArticles.Where(sourceArticle => sourceArticle.UpdatedDate.Date == updatedDate.Date);
         }
 
-        public async Task<ArticleSource> GetArticlesByShortUrl(string shortUrl, string shortUrlFormat)
+        public async Task<ArticleSource> GetArticlesByShortUrlAsync(string shortUrl, string shortUrlFormat)
         {
             if (shortUrl.Length != shortUrlFormat.Length)
             {
                 throw new NancyAPICoreExeption($"The date has an incorrect format. Expected format: {shortUrlFormat}");
             }
 
-            var sourceArticles = await m_ArticlesSourceService.GetData();
+            var sourceArticles = await m_ArticlesSourceService.GetDataAsync();
             var article = sourceArticles.FirstOrDefault(a => a.ShortUrl.EndsWith(shortUrl));
             if (article == null)
             {
@@ -60,18 +60,18 @@ namespace NancyAPI.Core.Services
             return article;
         }
 
-        public async Task<IEnumerable<(string, int)>> GetArticlesGroupsByDate(string section, string dateFormat)
+        public async Task<IEnumerable<(string, int)>> GetArticlesGroupsByDateAsync(string section, string dateFormat)
         {
-            var sourceArticles = await m_ArticlesSourceService.GetData(section);
+            var sourceArticles = await m_ArticlesSourceService.GetDataAsync(section);
             return sourceArticles.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
                 .Select(group => (group.Key.ToString(dateFormat), group.Count()));
         }
 
-        public async Task<(bool, string)> IsConnected()
+        public async Task<(bool, string)> IsConnectedAsync()
         {
             try
             {
-                await m_ArticlesSourceService.GetData();
+                await m_ArticlesSourceService.GetDataAsync();
                 return (true, null);
             }
             catch (NancyAPICoreExeption ex)

@@ -37,136 +37,136 @@ namespace Tests
         }
 
         [Fact]
-        public async Task IsConnected()
+        public async Task IsConnectedAsync_ReturnTrue_WhenGetData()
         {
             // Arrange
-            m_MockArticlesSourceService.Setup(service => service.GetData(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
 
             // Act
-            var isConnected = await articlesService.IsConnected();
+            var isConnected = await articlesService.IsConnectedAsync();
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(null), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(null), Times.Once);
             Assert.True(isConnected.Item1, isConnected.Item2);
         }
 
         [Fact]
-        public async Task IsNotConnected()
+        public async Task IsConnectedAsync_ReturnFalse_WhenErrorGetData()
         {
             // Arrange
             var errorMessage = "Server error";
-            m_MockArticlesSourceService.Setup(service => service.GetData(null)).ThrowsAsync(new NancyAPICoreExeption(errorMessage));
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(null)).ThrowsAsync(new NancyAPICoreExeption(errorMessage));
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
 
             // Act
-            var isConnected = await articlesService.IsConnected();
+            var isConnected = await articlesService.IsConnectedAsync();
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(null), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(null), Times.Once);
             Assert.False(isConnected.Item1);
             Assert.Equal(isConnected.Item2, errorMessage);
         }
 
         [Fact]
-        public async Task GetFirstArticle()
+        public async Task GetFirstArticleAsync_ReturnArticle_WhenGetData()
         {
             // Arrange
-            m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
             var expectedArticle = ARTICLE_SOURCES.First();
 
             // Act
-            var article = await articlesService.GetFirstArticle(SECTION);
+            var article = await articlesService.GetFirstArticleAsync(SECTION);
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(SECTION), Times.Once);
             Assert.Equal(expectedArticle, article);
         }
 
         [Fact]
-        public async Task GetArticles()
+        public async Task GetArticlesAsync_ReturnListOfArticles_WhenGetData()
         {
             // Arrange
-            m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
             var expectedArticles = ARTICLE_SOURCES;
 
             // Act
-            var articles = await articlesService.GetArticles(SECTION);
+            var articles = await articlesService.GetArticlesAsync(SECTION);
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(SECTION), Times.Once);
             Assert.Equal(expectedArticles, articles);
         }
 
         [Fact]
-        public async Task GetArticlesByDate()
+        public async Task GetArticlesByDateAsync_ReturnFiltredByDateArticles_WhenGetData()
         {
             // Arrange
-            m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
             var expectedArticleSource = ARTICLE_SOURCES.First();
             var date = expectedArticleSource.UpdatedDate;
             var expectedArticles = ARTICLE_SOURCES.Where(a => a.UpdatedDate == date).ToList();
 
             // Act
-            var articles = await articlesService.GetArticlesByDate(SECTION, date.ToString(DATE_FORMAT), DATE_FORMAT);
+            var articles = await articlesService.GetArticlesByDateAsync(SECTION, date.ToString(DATE_FORMAT), DATE_FORMAT);
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(SECTION), Times.Once);
             Assert.Equal(expectedArticles, articles);
         }
 
         [Fact]
-        public async Task GetArticlesByShortUrl()
+        public async Task GetArticlesByShortUrlAsync_ReturnFiltredByShortUrl_WhenGetData()
         {
             // Arrange
-            m_MockArticlesSourceService.Setup(service => service.GetData(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(null)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
             var expectedArticle = ARTICLE_SOURCES.Last();
             var shortUrl = expectedArticle.ShortUrl;
 
             // Act
-            var article = await articlesService.GetArticlesByShortUrl(shortUrl, SHORT_URL_FORMAT);
+            var article = await articlesService.GetArticlesByShortUrlAsync(shortUrl, SHORT_URL_FORMAT);
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(null), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(null), Times.Once);
             Assert.Equal(expectedArticle, article);
         }
 
         [Fact]
-        public async Task GetArticlesGroupsByDate()
+        public async Task GetArticlesGroupsByDateAsync_ReturnCountOfArticlesGroupedByDate_WhenGetData()
         {
             // Arrange
-            m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(SECTION)).ReturnsAsync(ARTICLE_SOURCES.ToList());
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
             var expectedArticleGroups = ARTICLE_SOURCES.GroupBy(sourceArticle => sourceArticle.UpdatedDate.Date)
                 .Select(group => (group.Key.ToString(DATE_FORMAT), group.Count())).ToList();
 
             // Act
-            var articleGroups = await articlesService.GetArticlesGroupsByDate(SECTION, DATE_FORMAT);
+            var articleGroups = await articlesService.GetArticlesGroupsByDateAsync(SECTION, DATE_FORMAT);
 
             // Assert
-            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(SECTION), Times.Once);
             Assert.Equal(expectedArticleGroups, articleGroups);
         }
 
         [Fact]
-        public void GetArticlesByInvalidSection()
+        public void GetArticlesByInvalidSectionAsync_ReturnException_WhenErrorGetData()
         {
             // Arrange
             var errorMessage = "Invalid section";
-            m_MockArticlesSourceService.Setup(service => service.GetData(SECTION)).ThrowsAsync(new NancyAPICoreExeption(errorMessage));
+            m_MockArticlesSourceService.Setup(service => service.GetDataAsync(SECTION)).ThrowsAsync(new NancyAPICoreExeption(errorMessage));
             var articlesService = new ArticlesService(m_MockArticlesSourceService.Object);
 
             // Act
-            Action act = () => articlesService.GetArticles(SECTION).GetAwaiter().GetResult();
+            Action act = () => articlesService.GetArticlesAsync(SECTION).GetAwaiter().GetResult();
 
             // Assert
             var exception = Assert.Throws<NancyAPICoreExeption>(act);
             Assert.Equal(errorMessage, exception.Message);
-            m_MockArticlesSourceService.Verify(service => service.GetData(SECTION), Times.Once);
+            m_MockArticlesSourceService.Verify(service => service.GetDataAsync(SECTION), Times.Once);
         }
     }
 }

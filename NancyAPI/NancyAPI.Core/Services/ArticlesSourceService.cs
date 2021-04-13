@@ -10,7 +10,7 @@ namespace NancyAPI.Core.Services
 {
     public class ArticlesSourceService : IArticlesSourceService
     {
-        public async Task<List<ArticleSource>> GetData(string section = null)
+        public async Task<List<ArticleSource>> GetDataAsync(string section = null)
         {
             var content = await GetContent(section ?? Config.HomeSection);
             if (TryParse<DataResponse>(content, out var dataResponse))
